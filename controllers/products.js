@@ -1,4 +1,6 @@
+const fs = require('fs');
 const path = require('path');
+const cloudinary = require('cloudinary').v2;
 const { StatusCodes } = require('http-status-codes');
 
 const Product = require('../models/Product');
@@ -20,6 +22,24 @@ const createProduct = async (req, res) => {
 };
 
 const uploadProductImage = async (req, res) => {
+  const result = await cloudinary.uploader.upload(
+    req.files.image.tempFilePath,
+    {
+      use_filename: true,
+      folder: 'file-upload',
+    }
+  );
+
+  fs.unlinkSync(req.files.image.tempFilePath);
+
+  return res.status(StatusCodes.OK).json({
+    image: {
+      src: result.secure_url,
+    },
+  });
+};
+
+const uploadProductImageLocal = async (req, res) => {
   if (!req.files) throw new BadRequestError('No File Uploaded');
 
   const productImage = req.files.image;
@@ -44,4 +64,5 @@ module.exports = {
   getAllProducts,
   createProduct,
   uploadProductImage,
+  uploadProductImageLocal,
 };
