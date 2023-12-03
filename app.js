@@ -1,6 +1,7 @@
 require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
+const fileUpload = require('express-fileupload');
 
 const connectDB = require('./db/connect');
 const productsRouter = require('./routes/productRoutes');
@@ -9,7 +10,10 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 
 const app = express();
 
+app.use(express.static('./public'));
+
 app.use(express.json());
+app.use(fileUpload());
 
 app.get('/', (req, res) => {
   res.send('<h1>File Upload Starter</h1>');
